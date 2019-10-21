@@ -1,20 +1,20 @@
 /*******************************************************
 Protocolos de Transporte
-Grado en Ingeniería Telemática
-Dpto. Ingeníería de Telecomunicación
-Univerisdad de Jaén
+
 
 Fichero: cliente.c
 Versión: 2.0
-Fecha: 09/2018
+
 Descripción:
-	Cliente sencillo TCP para IPv4 e IPv6
+	Cliente sencillo SMTP para IPv4 e IPv6
 
 *******************************************************/
 #include <stdio.h>
+#include <stdlib.h>
 #include <ws2tcpip.h>//Necesaria para las funciones IPv6
 #include <conio.h>
 #include "protocol.h"
+#include <string.h>
 
 #pragma comment(lib, "Ws2_32.lib") // Añade la librería actualizada para IPV6
 
@@ -33,7 +33,7 @@ int main(int *argc, char *argv[])
 	char ipdest[256];
 	char default_ip4[16]="127.0.0.1";
 	char default_ip6[64]="::1";
-
+	int i = 0;
 	WORD wVersionRequested;
 	WSADATA wsaData;
 	int err;
@@ -105,14 +105,21 @@ int main(int *argc, char *argv[])
 			if(connect(sockfd, server_in, address_size)==0)//Si la conexion es correcta
 			{
 				printf("CLIENTE> CONEXION ESTABLECIDA CON %s:%d\r\n",ipdest,TCP_SERVICE_PORT);
-			
+				
+
 				//Inicio de la máquina de estados
 				do{
 					switch(estado){
 					case S_HELO:
 						// Se recibe el mensaje de bienvenida
-						sprintf_s(buffer_out, sizeof(buffer_out), "helo pc");//Manda la bienvenida
-						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//
+						printf("CLIENTE> Introduce tu nombre de equipo (enter para salir): ");
+						gets_s(input, sizeof(input));
+						sprintf_s(buffer_out, sizeof(buffer_out), "helo %s\n",input);//Manda la bienvenida
+						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
+						recibidos = recv(sockfd, buffer_in, 512, 0);
+						buffer_in[recibidos] = 0x00;
+						printf(buffer_in);
+																			 //enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//
 						
 						
 						break;
@@ -126,69 +133,105 @@ int main(int *argc, char *argv[])
 						}
 						else
 							
-						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s",input); //Manda al buffer de salida el usuario
-						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
+						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s\n",input); //Manda al buffer de salida el usuario
 
-						printf("CLIENTE> Introduzca el destinatario del correo (enter para salir): ");
-						gets_s(input, sizeof(input));
-						sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s", input); //Manda al buffer de salida el usuario
-						sprintf_s(buffer_out, sizeof(buffer_out), "data\n"); //Manda al buffer de salida el usuario
-						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
-						gets_s(input, sizeof(input));
-						sprintf_s(buffer_out, sizeof(buffer_out), "%s",input); //Manda al buffer de salida el usuario
-						sprintf_s(buffer_out, sizeof(buffer_out), ".\n", input); //Manda al buffer de salida el usuario
+						
+						//sprintf_s(buffer_out, sizeof(buffer_out), "data\n"); //Manda al buffer de salida el usuario
+						
 						
 						break;
 					case S_PASS:
-						printf("CLIENTE> Introduzca la clave (enter para salir): ");
+						
+						printf("CLIENTE> Introduzca el destinatario del correo (enter para salir): ");
 						gets_s(input, sizeof(input));
+						//sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s", input); //Manda al buffer de salida el usuario
+						//printf("CLIENTE> Introduzca la clave (enter para salir): ");
+						//gets_s(input, sizeof(input));
 						if(strlen(input)==0){
 							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
 							estado=S_QUIT;
 						}
 						else
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s",input);
+							sprintf_s (buffer_out, sizeof(buffer_out), "rcpt to:%s\n",input);
 						
 						break;
 				
 					case S_AUTH: //Apartado de autentificacion del cliente en dos pasos
-						printf("CLIENTE> Etapa de Autentificacion...Introduzca el primer paso:\r\n");
-						gets_s(input, sizeof(input)); //Obtiene el primer paso introducido
-						int num1;
-						num1 = atoi(input); //Convierte la cadena obtenida en un numero entero
-						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
-							estado = S_QUIT;
-						}
+						//printf("CLIENTE> Etapa de Autentificacion...Introduzca el primer paso:\r\n");
+						//gets_s(input, sizeof(input)); //Obtiene el primer paso introducido
+						//int num1;
+						//num1 = atoi(input); //Convierte la cadena obtenida en un numero entero
+						//if (strlen(input) == 0) {
+						//	sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+						//	estado = S_QUIT;
+						//}
 
-						printf("CLIENTE> Etapa de Autentificacion...Introduzca el segundo paso:\r\n");
-						gets_s(input, sizeof(input));
-						int num2;
-						num2 = atoi(input);
-						
-						if (strlen(input) == 0) {
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
-							estado = S_QUIT;
-						}
-						else
-						
-							sprintf_s(buffer_out, sizeof(buffer_out), "%s %d %d %s", SUM,num1,num2, CRLF);//Manda la cadena de dos pasos al servidor en el formato establecido
+						//printf("CLIENTE> Etapa de Autentificacion...Introduzca el segundo paso:\r\n");
+						//gets_s(input, sizeof(input));
+						//int num2;
+						//num2 = atoi(input);
+						//
+						//if (strlen(input) == 0) {
+						//	sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+						//	estado = S_QUIT;
+						//}
+						//else
+						//
+						//	sprintf_s(buffer_out, sizeof(buffer_out), "%s %d %d %s", SUM,num1,num2, CRLF);//Manda la cadena de dos pasos al servidor en el formato establecido
+						//
+						sprintf_s(buffer_out, sizeof(buffer_out), "data\n");
 						
 						break;
 					
 					case S_DATA:
-						printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");
+						//printf("CLIENTE> Introduzca datos (enter o QUIT para salir): ");
+						//
+						//gets_s(input, sizeof(input));
+						//
+						//if(strlen(input)==0){
+						//	sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
+						//	estado=S_QUIT;
+						//}
+						//else
+						//	sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",ECHO,input,CRLF); //Comando que añade los datos
+						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
+						int msg = 10000;
+						char mensaje[2054] = "";
 						
-						gets_s(input, sizeof(input));
 						
-						if(strlen(input)==0){
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
-							estado=S_QUIT;
+						
+						for (i = 0; i<msg; i++)
+						{
+							gets_s(input, sizeof(input));
+							
+							//sprintf_s(mensaje, "%s %s", mensaje, input);
+							
+							//strcat(mensaje, input);
+							//strcat(mensaje, "\n");
+							//printf("%s", mensaje);
+							
+							
+							if (strcmp(input, ".") == 0) {
+								i = msg;
+								sprintf_s(buffer_out, sizeof(buffer_out), "%s %s.%s", mensaje,CRLF,CRLF);
+								
+								
+							}
+						
 						}
-						else
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",ECHO,input,CRLF); //Comando que añade los datos
+						//gets_s(input, sizeof(input));
+						//sprintf_s(buffer_out, sizeof(buffer_out), "%s\n", input);
+						//Manda al buffer de salida el usuario
+						//sprintf_s(buffer_out, sizeof(buffer_out), ".\n", input); //Manda al buffer de salida el usuario
+						//recibidos = recv(sockfd, buffer_in, 512, 0);
+						
+						printf(buffer_out);
 						break;
 				
+					case 5:
+						printf("caso 5");
+						break;
+
 					}
 
 					if(estado!=S_HELO){
@@ -213,7 +256,7 @@ int main(int *argc, char *argv[])
 					}else{
 						buffer_in[recibidos]=0x00;
 						printf(buffer_in);
-						if(estado!=S_DATA) //Solucionar
+						 //Solucionar
 							estado++;  
 					}
 

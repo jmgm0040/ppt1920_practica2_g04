@@ -28,7 +28,7 @@
 #define S_PASS 2
 #define S_AUTH 3
 #define S_DATA 4
-#define S_QUIT 5
+#define S_QUIT 7
 #define S_EXIT 6
 
 
