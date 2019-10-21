@@ -112,7 +112,7 @@ int main(int *argc, char *argv[])
 					case S_HELO:
 						// Se recibe el mensaje de bienvenida
 						sprintf_s(buffer_out, sizeof(buffer_out), "helo pc");//Manda la bienvenida
-						
+						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//
 						
 						
 						break;
@@ -127,6 +127,8 @@ int main(int *argc, char *argv[])
 						else
 							
 						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s",input); //Manda al buffer de salida el usuario
+						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
+
 						printf("CLIENTE> Introduzca el destinatario del correo (enter para salir): ");
 						gets_s(input, sizeof(input));
 						sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s", input); //Manda al buffer de salida el usuario
@@ -135,7 +137,7 @@ int main(int *argc, char *argv[])
 						gets_s(input, sizeof(input));
 						sprintf_s(buffer_out, sizeof(buffer_out), "%s",input); //Manda al buffer de salida el usuario
 						sprintf_s(buffer_out, sizeof(buffer_out), ".\n", input); //Manda al buffer de salida el usuario
-						estado = S_PASS;
+						
 						break;
 					case S_PASS:
 						printf("CLIENTE> Introduzca la clave (enter para salir): ");
