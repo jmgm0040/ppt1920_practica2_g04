@@ -143,7 +143,7 @@ int main(int *argc, char *argv[])
 							estado=S_QUIT;
 						}
 						else
-							sprintf_s (buffer_out, sizeof(buffer_out), "%s %s%s",PW,input,CRLF);
+							sprintf_s (buffer_out, sizeof(buffer_out), "%s",input);
 						
 						break;
 				
