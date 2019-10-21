@@ -209,7 +209,7 @@ int main(int *argc, char *argv[])
 							//strcat(mensaje, input);
 							//strcat(mensaje, "\n");
 							//printf("%s", mensaje);
-							
+							unirCadenas(mensaje, input);
 							
 							if (strcmp(input, ".") == 0) {
 								i = msg;
@@ -276,4 +276,15 @@ int main(int *argc, char *argv[])
 	}while(option!='n' && option!='N');
 
 	return(0);
+}
+
+int unirCadenas(char c1[], char c2[])
+{
+	int i, x;
+
+	for (i = 0; c1[i] != '\0'; i++);
+	for (x = 0; c2[x] != '\0'; x++, i++)
+		c1[i] = c2[x];
+	c1[i + 1] = '\0';
+	return 0;
 }
