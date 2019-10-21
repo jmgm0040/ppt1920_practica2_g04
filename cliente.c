@@ -111,12 +111,12 @@ int main(int *argc, char *argv[])
 					switch(estado){
 					case S_HELO:
 						// Se recibe el mensaje de bienvenida
-						sprintf_s(buffer_out, sizeof(buffer_out), "helo");//Manda la bienvenida
+						sprintf_s(buffer_out, sizeof(buffer_out), "helo pc");//Manda la bienvenida
 						estado = S_USER;
 						break;
 					case S_USER:
 						// establece la conexion de aplicacion 
-						printf("CLIENTE> Introduzca el usuario (enter para salir): ");
+						printf("CLIENTE> Introduzca el remitente del correo (enter para salir): ");
 						gets_s(input,sizeof(input));
 						if(strlen(input)==0){
 							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);//Si llega el input sin contenido se ejecuta esta linea de código y se para el programa
@@ -124,7 +124,8 @@ int main(int *argc, char *argv[])
 						}
 						else
 
-						sprintf_s (buffer_out, sizeof(buffer_out), "%s",input); //Manda al buffer de salida el usuario
+						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s",input); //Manda al buffer de salida el usuario
+						estado = S_PASS;
 						break;
 					case S_PASS:
 						printf("CLIENTE> Introduzca la clave (enter para salir): ");
