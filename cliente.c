@@ -197,7 +197,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
 						int msg = 10000;
 						char mensaje[2054] = "";
-						
+						char espacio[2054]=" ";
 						
 						
 						for (i = 0; i<msg; i++)
@@ -209,14 +209,20 @@ int main(int *argc, char *argv[])
 							//strcat(mensaje, input);
 							//strcat(mensaje, "\n");
 							//printf("%s", mensaje);
-							unirCadenas(mensaje, input);
-							
 							if (strcmp(input, ".") == 0) {
 								i = msg;
-								sprintf_s(buffer_out, sizeof(buffer_out), "%s %s.%s", mensaje,CRLF,CRLF);
-								
-								
+
+								sprintf_s(buffer_out, sizeof(buffer_out), "%s %s.%s", mensaje, CRLF, CRLF);
+
+
 							}
+							
+							unirCadenas(mensaje, input);
+							unirCadenas(mensaje, espacio);
+
+
+							
+							
 						
 						}
 						//gets_s(input, sizeof(input));
@@ -225,13 +231,10 @@ int main(int *argc, char *argv[])
 						//sprintf_s(buffer_out, sizeof(buffer_out), ".\n", input); //Manda al buffer de salida el usuario
 						//recibidos = recv(sockfd, buffer_in, 512, 0);
 						
-						printf(buffer_out);
+						
 						break;
 				
-					case 5:
-						printf("caso 5");
-						break;
-
+					
 					}
 
 					if(estado!=S_HELO){
