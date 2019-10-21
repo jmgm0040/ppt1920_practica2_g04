@@ -125,6 +125,14 @@ int main(int *argc, char *argv[])
 						else
 
 						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s",input); //Manda al buffer de salida el usuario
+						printf("CLIENTE> Introduzca el destinatario del correo (enter para salir): ");
+						gets_s(input, sizeof(input));
+						sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s", input); //Manda al buffer de salida el usuario
+						sprintf_s(buffer_out, sizeof(buffer_out), "data\n"); //Manda al buffer de salida el usuario
+						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
+						gets_s(input, sizeof(input));
+						sprintf_s(buffer_out, sizeof(buffer_out), "%s",input); //Manda al buffer de salida el usuario
+						sprintf_s(buffer_out, sizeof(buffer_out), ".\n", input); //Manda al buffer de salida el usuario
 						estado = S_PASS;
 						break;
 					case S_PASS:
