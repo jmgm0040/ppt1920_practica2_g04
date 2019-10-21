@@ -111,7 +111,7 @@ int main(int *argc, char *argv[])
 				do{
 					switch(estado){
 					case S_HELO:
-						// Se recibe el mensaje de bienvenida
+						// Se recibe el mensaje de bienvenidaa
 						printf("CLIENTE> Introduce tu nombre de equipo (enter para salir): ");
 						gets_s(input, sizeof(input));
 						sprintf_s(buffer_out, sizeof(buffer_out), "helo %s\n",input);//Manda la bienvenida
