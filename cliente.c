@@ -6,7 +6,7 @@ Fichero: cliente.c
 Versión: 2.0
 
 Descripción:
-	Cliente sencillo SMTP para IPv4 e IPv6
+	Cliente sencillo SMTP para IPv4
 
 *******************************************************/
 #include <stdio.h>
