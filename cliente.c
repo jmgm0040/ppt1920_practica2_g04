@@ -159,6 +159,12 @@ int main(int *argc, char *argv[])
 						
 						break;
 					
+					
+					case S_RSET:  //Apartado reset
+						sprintf_s(buffer_out, sizeof(buffer_out), "RSET %s", CRLF);
+
+						break;
+
 					case S_DATA:
 						
 						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
@@ -166,7 +172,7 @@ int main(int *argc, char *argv[])
 						char mensaje[2054] = "";
 						char espacio[2054]=" ";
 						
-						
+					
 						for (i = 0; i<msg; i++)
 						{
 							gets_s(input, sizeof(input));
@@ -188,7 +194,11 @@ int main(int *argc, char *argv[])
 						
 						}
 						
-						
+						printf("CLIENTE> ¿Desea abortar la comunicacion? (S o N): ");
+						gets_s(input, sizeof(input));
+						if (strcmp(input, "n") == 0|| strcmp(input, "N") == 0) {
+							estado++;
+						}
 						break;
 				
 					

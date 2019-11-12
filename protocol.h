@@ -28,8 +28,9 @@
 #define S_PASS 2
 #define S_AUTH 3
 #define S_DATA 4
-#define S_QUIT 5
-#define S_EXIT 6
+#define S_RSET 5
+#define S_QUIT 6
+#define S_EXIT 7
 
 
 //PUERTO DEL SERVICIO
