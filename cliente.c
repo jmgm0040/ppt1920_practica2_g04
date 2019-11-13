@@ -148,21 +148,33 @@ int main(int *argc, char *argv[])
 							sprintf_s (buffer_out, sizeof(buffer_out), "%s%s",SD,CRLF);
 							estado=S_QUIT;
 						}
-						else
-							sprintf_s (buffer_out, sizeof(buffer_out), "rcpt to:%s\n",input);
 						
+						else {
+
+
+							sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s\n", input);
+						
+						}
 						break;
 				
 					case S_AUTH: //Apartado de autentificacion del cliente en dos pasos
 						
-						sprintf_s(buffer_out, sizeof(buffer_out), "data\n");
 						
+						if (strncmp(buffer_in,"554",3)==0) {
+							
+							estado=4;
+						}
+
+						else {
+							sprintf_s(buffer_out, sizeof(buffer_out), "data\n");
+						}
 						break;
 					
 					
 					case S_RSET:  //Apartado reset
 						sprintf_s(buffer_out, sizeof(buffer_out), "RSET %s", CRLF);
-
+						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia
+						estado = -1;
 						break;
 
 					case S_DATA:
@@ -193,12 +205,12 @@ int main(int *argc, char *argv[])
 							
 						
 						}
-						
-						printf("CLIENTE> ¿Desea abortar la comunicacion? (S o N): ");
+						printf("CLIENTE> ¿Desea resetear la conexion? (Pulse N para no): ");
 						gets_s(input, sizeof(input));
-						if (strcmp(input, "n") == 0|| strcmp(input, "N") == 0) {
+						if (strncmp(input,"n", 1) == 0|| strncmp(input, "N", 1) == 0) {
 							estado++;
 						}
+					
 						break;
 				
 					

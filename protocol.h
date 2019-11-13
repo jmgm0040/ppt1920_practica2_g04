@@ -14,7 +14,7 @@
 #define NUM1 1234 //Paso 1 autentificacion
 #define NUM2 5678 // Paso 2 autentificacion
 #define NUM3 6912 //Suma de auntenticación
-
+#define RSET "RSET" //Reset de datos
 // RESPUESTAS A COMANDOS DE APLICACION
 #define OK  "OK"
 #define ER  "ER"
