@@ -254,8 +254,8 @@ int main(int *argc, char *argv[])
 							
 						
 						}
-						emisor[2053] = "";// vacia nombre del remitente
-						receptor[2053] = "";//vacia nombre del destinatario
+						emisor[2053] = " ";// vacia nombre del remitente
+						receptor[2053] = " ";//vacia nombre del destinatario
 						printf("CLIENTE> ¿Desea resetear la conexion? (Pulse N para no): ");
 						gets_s(input, sizeof(input));
 						if (strncmp(input,"n", 1) == 0|| strncmp(input, "N", 1) == 0) {
