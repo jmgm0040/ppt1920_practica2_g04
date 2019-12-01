@@ -4,17 +4,22 @@ Protocolos de Transporte
 
 Fichero: cliente.c
 Versión: 2.0
-
+Autores: José Manuel Gómez Muñoz
+		 Javier Almodóvar Villacañas
 Descripción:
 	Cliente sencillo SMTP para IPv4
 
 *******************************************************/
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <ws2tcpip.h>//Necesaria para las funciones IPv6
 #include <conio.h>
 #include "protocol.h"
 #include <string.h>
+
+
 
 #pragma comment(lib, "Ws2_32.lib") // Añade la librería actualizada para IPV6
 
@@ -31,10 +36,10 @@ int main(int *argc, char *argv[])
 	char option;
 	int ipversion=AF_INET;//IPv4 por defecto
 	char ipdest[256];
-	char default_ip4[16]="127.0.0.1";
+	char default_ip4[16]="127.0.0.1";//Ip por defecto
 	char default_ip6[64]="::1";
-	char emisor[2054] = " ";
-	char receptor[2054] = " ";
+	char emisor[2054] = " ";//nombre del remitente
+	char receptor[2054] = " ";//nombre del destinatario
 	int i = 0;
 	WORD wVersionRequested;
 	WSADATA wsaData;
@@ -57,16 +62,9 @@ int main(int *argc, char *argv[])
 
 	do{
 
-		printf("CLIENTE> ¿Qué versión de IP desea usar?  IPv4 [por defecto] ");
-		gets_s(ipdest, sizeof(ipdest)); //Obtiene además el espacio utilizado para la variable
-
-		if (strcmp(ipdest, "6") == 0) {
-			ipversion = AF_INET6;
-
-		}
-		else { //Distinto de 6 se elige la versión 4
-			ipversion = AF_INET;
-		}
+		
+			ipversion = AF_INET;//Para IPV4
+		
 
 		sockfd=socket(ipversion,SOCK_STREAM,0); //Crea un socket con los datos introducidos
 		if(sockfd==INVALID_SOCKET){
@@ -76,7 +74,20 @@ int main(int *argc, char *argv[])
 		else{
 			printf("CLIENTE> Introduzca la IP destino o el dominio (pulsar enter para IP por defecto): ");
 			gets_s(ipdest,sizeof(ipdest)); //Obtiene el valor IP introducido
+			//printf(getaddrinfo(ipdest));
+			struct hostent* servidor; //Estructura de datos de host
+			servidor = gethostbyname(ipdest); //Resolucion de dominios
+			if (servidor == NULL)
+			{
+				printf("La direccion IP del host es erronea, el programa se va a cerrar...\n"); //Comprueba que el host sea valido
+				return 0;
+			}
+			struct in_addr ipadd; //Estructura de datos ip
+			ipadd = *(struct in_addr*)servidor->h_addr_list[0];//Obtiene la direccion ip de un dominio
+			printf("Direccion IP: %s\n", inet_ntoa(ipadd)); //Direccion ip del dominio dado
+			
 
+			
 			//Dirección por defecto según la familia
 			if(strcmp(ipdest,"")==0 && ipversion==AF_INET)
 				strcpy_s(ipdest,sizeof(ipdest),default_ip4);
@@ -87,8 +98,8 @@ int main(int *argc, char *argv[])
 			if(ipversion==AF_INET){
 				server_in4.sin_family=AF_INET;
 				server_in4.sin_port=htons(TCP_SERVICE_PORT);
-				//server_in4.sin_addr.s_addr=inet_addr(ipdest);
-				inet_pton(ipversion,ipdest,&server_in4.sin_addr.s_addr); //Convierte una cadena en una direccion ip
+				server_in4.sin_addr.s_addr=inet_addr(inet_ntoa(ipadd));
+				inet_pton(ipversion, inet_ntoa(ipadd),&server_in4.sin_addr.s_addr); //Convierte una cadena en una direccion ip
 				server_in=(struct sockaddr*)&server_in4;
 				address_size = sizeof(server_in4);
 			}
@@ -118,7 +129,7 @@ int main(int *argc, char *argv[])
 						gets_s(input, sizeof(input));
 						if (strlen(input) == 0) {
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
-							estado = S_QUIT;
+							estado = S_QUIT; //Sale del programa al introducion enter
 							enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
 							recibidos = recv(sockfd, buffer_in, 512, 0);
 						}
@@ -127,9 +138,7 @@ int main(int *argc, char *argv[])
 						recibidos = recv(sockfd, buffer_in, 512, 0);
 						buffer_in[recibidos] = 0x00;
 						printf(buffer_in);
-																			 //enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//
-						
-						
+																			
 						break;
 					case S_REMI:
 						// establece la conexion de aplicacion 
@@ -144,7 +153,7 @@ int main(int *argc, char *argv[])
 							
 						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s\n",FROM,input); //Manda al buffer de salida el usuario
 
-						unirCadenas(emisor, input);
+						unirCadenas(emisor, input); //Inserta el nombre del remitente en la variable
 						
 						
 						break;
@@ -162,7 +171,7 @@ int main(int *argc, char *argv[])
 
 
 							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s\n",RCPT, input);
-							unirCadenas(receptor, input);
+							unirCadenas(receptor, input); //Inserta el nombre del destinatario en la variable
 						}
 						break;
 				
@@ -171,7 +180,7 @@ int main(int *argc, char *argv[])
 						
 						if (strncmp(buffer_in,"554",3)==0) {
 							
-							estado=4;
+							estado=4;//Manda al estado de RSET al recibir el codigo 554 error de usuario
 						}
 
 						else {
@@ -183,7 +192,7 @@ int main(int *argc, char *argv[])
 					case S_RSET:  //Apartado reset
 						sprintf_s(buffer_out, sizeof(buffer_out), "%s %s",RSET, CRLF);
 						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia
-						estado = -1;
+						estado = -1; //Reinicia la sesión
 						break;
 
 					case S_DATA:
@@ -222,7 +231,7 @@ int main(int *argc, char *argv[])
 						
 						
 						unirCadenas(asunto, asunto3);
-						unirCadenas(mensaje, asunto);
+						unirCadenas(mensaje, asunto);//Añade las cabeceras al mensaje
 
 						printf("CLIENTE> Introduzca el mensaje (enter para salir): ");
 						for (i = 0; i<msg; i++)
@@ -238,13 +247,15 @@ int main(int *argc, char *argv[])
 							}
 							
 							unirCadenas(mensaje, input);
-							unirCadenas(mensaje, espacio);
+							unirCadenas(mensaje, espacio);//Une todo el mensaje hasta que se introduce un punto
 
 
 							
 							
 						
 						}
+						emisor[2053] = "";// vacia nombre del remitente
+						receptor[2053] = "";//vacia nombre del destinatario
 						printf("CLIENTE> ¿Desea resetear la conexion? (Pulse N para no): ");
 						gets_s(input, sizeof(input));
 						if (strncmp(input,"n", 1) == 0|| strncmp(input, "N", 1) == 0) {
@@ -298,6 +309,7 @@ int main(int *argc, char *argv[])
 	}while(option!='n' && option!='N');
 
 	return(0);
+	
 }
 
 int unirCadenas(char c1[], char c2[])
