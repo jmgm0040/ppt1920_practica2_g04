@@ -24,8 +24,8 @@
 
 //ESTADOS
 #define S_HELO 0
-#define S_USER 1
-#define S_PASS 2
+#define S_REMI 1
+#define S_DEST 2
 #define S_AUTH 3
 #define S_DATA 4
 #define S_RSET 5
