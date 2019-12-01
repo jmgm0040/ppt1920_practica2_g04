@@ -52,12 +52,12 @@ int main(int *argc, char *argv[])
 	}
 	//Fin: Inicialización Windows sockets
 	
-	printf("**************\r\nCLIENTE SMTP SENCILLO SOBRE IPv4 o IPv6\r\n*************\r\n");
+	printf("**************\r\nCLIENTE SMTP SENCILLO SOBRE IPv4 \r\n*************\r\n");
 	
 
 	do{
 
-		printf("CLIENTE> ¿Qué versión de IP desea usar? 6 para IPv6, 4 para IPv4 [por defecto] ");
+		printf("CLIENTE> ¿Qué versión de IP desea usar?  IPv4 [por defecto] ");
 		gets_s(ipdest, sizeof(ipdest)); //Obtiene además el espacio utilizado para la variable
 
 		if (strcmp(ipdest, "6") == 0) {
@@ -74,7 +74,7 @@ int main(int *argc, char *argv[])
 			exit(-1);
 		}
 		else{
-			printf("CLIENTE> Introduzca la IP destino (pulsar enter para IP por defecto): ");
+			printf("CLIENTE> Introduzca la IP destino o el dominio (pulsar enter para IP por defecto): ");
 			gets_s(ipdest,sizeof(ipdest)); //Obtiene el valor IP introducido
 
 			//Dirección por defecto según la familia
@@ -116,6 +116,12 @@ int main(int *argc, char *argv[])
 						// Se recibe el mensaje de bienvenidaa
 						printf("CLIENTE> Introduce tu nombre de equipo (enter para salir): ");
 						gets_s(input, sizeof(input));
+						if (strlen(input) == 0) {
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s", SD, CRLF);
+							estado = S_QUIT;
+							enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
+							recibidos = recv(sockfd, buffer_in, 512, 0);
+						}
 						sprintf_s(buffer_out, sizeof(buffer_out), "%s %s\n",HELO,input);//Manda la bienvenida
 						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
 						recibidos = recv(sockfd, buffer_in, 512, 0);
@@ -160,7 +166,7 @@ int main(int *argc, char *argv[])
 						}
 						break;
 				
-					case S_AUTH: //Apartado de autentificacion del cliente en dos pasos
+					case S_AUTH: //Comprobación de la existencia de usuario, si  recibe ese codigo significa que no existe
 						
 						
 						if (strncmp(buffer_in,"554",3)==0) {
