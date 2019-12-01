@@ -138,7 +138,7 @@ int main(int *argc, char *argv[])
 							
 						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s\n",input); //Manda al buffer de salida el usuario
 
-						emisor[sizeof(input)] = input;
+						unirCadenas(emisor, input);
 						
 						
 						break;
@@ -156,7 +156,7 @@ int main(int *argc, char *argv[])
 
 
 							sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s\n", input);
-							receptor[sizeof(input)] = input;
+							unirCadenas(receptor, input);
 						}
 						break;
 				
@@ -195,6 +195,8 @@ int main(int *argc, char *argv[])
 						unirCadenas(asunto, input);
 						unirCadenas(asunto, salto);
 
+					
+
 
 						char from[2054] = "from: ";
 						unirCadenas(asunto, from);
@@ -211,10 +213,7 @@ int main(int *argc, char *argv[])
 
 
 						char asunto3[2054] = "\n\n";
-						//asunto2[sizeof(input)]=input;
-						//sprintf_s(buffer_out, sizeof(buffer_out), "subject: Asunto\r\n");
-						//enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);
-
+						
 						
 						unirCadenas(asunto, asunto3);
 						unirCadenas(mensaje, asunto);
