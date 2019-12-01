@@ -31,6 +31,12 @@
 #define S_RSET 5
 #define S_QUIT 6
 #define S_EXIT 7
+//Comandos de protocolo
+#define HELO "helo"
+#define FROM "mail from:"
+#define RCPT "rcpt to:"
+#define DATA "data"
+#define RSET "RSET"
 
 
 //PUERTO DEL SERVICIO

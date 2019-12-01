@@ -116,7 +116,7 @@ int main(int *argc, char *argv[])
 						// Se recibe el mensaje de bienvenidaa
 						printf("CLIENTE> Introduce tu nombre de equipo (enter para salir): ");
 						gets_s(input, sizeof(input));
-						sprintf_s(buffer_out, sizeof(buffer_out), "helo %s\n",input);//Manda la bienvenida
+						sprintf_s(buffer_out, sizeof(buffer_out), "%s %s\n",HELO,input);//Manda la bienvenida
 						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia todo lo del buffer de salida al socket
 						recibidos = recv(sockfd, buffer_in, 512, 0);
 						buffer_in[recibidos] = 0x00;
@@ -136,7 +136,7 @@ int main(int *argc, char *argv[])
 						}
 						else
 							
-						sprintf_s (buffer_out, sizeof(buffer_out), "mail from:%s\n",input); //Manda al buffer de salida el usuario
+						sprintf_s (buffer_out, sizeof(buffer_out), "%s%s\n",FROM,input); //Manda al buffer de salida el usuario
 
 						unirCadenas(emisor, input);
 						
@@ -155,7 +155,7 @@ int main(int *argc, char *argv[])
 						else {
 
 
-							sprintf_s(buffer_out, sizeof(buffer_out), "rcpt to:%s\n", input);
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s%s\n",RCPT, input);
 							unirCadenas(receptor, input);
 						}
 						break;
@@ -169,13 +169,13 @@ int main(int *argc, char *argv[])
 						}
 
 						else {
-							sprintf_s(buffer_out, sizeof(buffer_out), "data\n");
+							sprintf_s(buffer_out, sizeof(buffer_out), "%s\n",DATA);
 						}
 						break;
 					
 					
 					case S_RSET:  //Apartado reset
-						sprintf_s(buffer_out, sizeof(buffer_out), "RSET %s", CRLF);
+						sprintf_s(buffer_out, sizeof(buffer_out), "%s %s",RSET, CRLF);
 						enviados = send(sockfd, buffer_out, (int)strlen(buffer_out), 0);//Envia
 						estado = -1;
 						break;
@@ -242,7 +242,7 @@ int main(int *argc, char *argv[])
 						printf("CLIENTE> ¿Desea resetear la conexion? (Pulse N para no): ");
 						gets_s(input, sizeof(input));
 						if (strncmp(input,"n", 1) == 0|| strncmp(input, "N", 1) == 0) {
-							estado++;
+							estado=S_REMI;
 						}
 					
 						break;
